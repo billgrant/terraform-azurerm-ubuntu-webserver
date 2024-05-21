@@ -13,6 +13,13 @@ terraform {
   }
 }
 
+locals {
+  tags = {
+    name = var.name
+    environment = var.environment
+  }
+}
+
 data "tfe_outputs" "rgvnet" {
   organization = var.organization
   workspace    = var.workspace
@@ -25,15 +32,16 @@ resource "random_id" "webserver_id" {
 
 # Create Public IP Address
 resource "azurerm_public_ip" "webserver-ip" {
-  name                = "webserver-ip-${random_id.webserver_id.hex}"
+  name                = "${var.name}-ip-${random_id.webserver_id.hex}"
   location            = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_location
   resource_group_name = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_name
   allocation_method   = "Static"
+  tags                = local.tags
 }
 
 # Create Network Interface
 resource "azurerm_network_interface" "webserver-nic" {
-  name                = "webserver-nic-${random_id.webserver_id.hex}"
+  name                = "${var.name}-nic-${random_id.webserver_id.hex}"
   location            = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_location
   resource_group_name = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_name
 
@@ -43,16 +51,17 @@ resource "azurerm_network_interface" "webserver-nic" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.webserver-ip.id
   }
+    tags = local.tags
 }
 
 # Security group to allow inbound webtraffic
 resource "azurerm_network_security_group" "webserver-sg" {
-  name                = "webserver-sg-${random_id.webserver_id.hex}"
+  name                = "${var.name}-sg-${random_id.webserver_id.hex}"
   location            = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_location
   resource_group_name = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_name
 
   security_rule {
-    name                       = "webserver-sg-rule-${random_id.webserver_id.hex}"
+    name                       = "${var.name}-sg-rule-${random_id.webserver_id.hex}"
     priority                   = 100
     direction                  = "Inbound"
     access                     = "Allow"
@@ -62,6 +71,7 @@ resource "azurerm_network_security_group" "webserver-sg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+  tags = local.tags
 }
 
 # Subnet/Security Group assocication
@@ -72,7 +82,7 @@ resource "azurerm_subnet_network_security_group_association" "webserver-sg-assoc
 
 # Setup Azure Webserver
 resource "azurerm_linux_virtual_machine" "webserver-vm" {
-  name                = "webserver-vm-${random_id.webserver_id.hex}"
+  name                = "${var.name}-vm-${random_id.webserver_id.hex}"
   location            = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_location
   resource_group_name = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_name
   size                = "Standard_B1s"
@@ -100,7 +110,7 @@ resource "azurerm_linux_virtual_machine" "webserver-vm" {
   custom_data = base64encode(
     <<CUSTOM_DATA
 #!/bin/bash
-echo "<h1>Azure Terraform Webserver-${random_id.webserver_id.hex}<h1>" > index.html
+echo "<h1>Azure Terraform Webserver </br> ${var.name}-vm-${random_id.webserver_id.hex}<h1>" > index.html
 nohup busybox httpd -f -p 80 &
 #write out current crontab
 crontab -l > mycron
@@ -111,4 +121,5 @@ crontab mycron
 rm mycron
 CUSTOM_DATA
   )
+tags = local.tags
 }
