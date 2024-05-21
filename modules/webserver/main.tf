@@ -54,32 +54,6 @@ resource "azurerm_network_interface" "webserver-nic" {
     tags = local.tags
 }
 
-# Security group to allow inbound webtraffic
-resource "azurerm_network_security_group" "webserver-sg" {
-  name                = "${var.name}-sg-${random_id.webserver_id.hex}"
-  location            = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_location
-  resource_group_name = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_name
-
-  security_rule {
-    name                       = "${var.name}-sg-rule-${random_id.webserver_id.hex}"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-  tags = local.tags
-}
-
-# Subnet/Security Group assocication
-resource "azurerm_subnet_network_security_group_association" "webserver-sg-association" {
-  subnet_id                 = data.tfe_outputs.rgvnet.nonsensitive_values.subnet_id
-  network_security_group_id = azurerm_network_security_group.webserver-sg.id
-}
-
 # Setup Azure Webserver
 resource "azurerm_linux_virtual_machine" "webserver-vm" {
   name                = "${var.name}-vm-${random_id.webserver_id.hex}"
