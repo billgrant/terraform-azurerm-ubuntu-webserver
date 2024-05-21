@@ -59,7 +59,7 @@ resource "azurerm_linux_virtual_machine" "webserver-vm" {
   name                = "${var.name}-vm-${random_id.webserver_id.hex}"
   location            = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_location
   resource_group_name = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_name
-  size                = "Standard_B1s"
+  size                = var.vm_size
   admin_username      = "adminuser"
   network_interface_ids = [
     azurerm_network_interface.webserver-nic.id
