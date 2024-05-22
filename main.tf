@@ -11,4 +11,5 @@ module "webserver" {
   pub_ssh_key  = var.pub_ssh_key
   name         = var.name
   environment  = var.environment
+  vm_size      = var.vm_size
 }

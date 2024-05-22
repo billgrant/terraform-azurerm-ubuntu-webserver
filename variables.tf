@@ -22,3 +22,9 @@ variable "environment" {
   description = "The environment for the webserver"
   type        = string
 }
+
+variable "vm_size" {
+  description = "The size of the VM"
+  type        = string
+  default     = "Standard_B1s"
+}

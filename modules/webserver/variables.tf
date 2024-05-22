@@ -10,7 +10,7 @@ variable "workspace" {
 
 variable "pub_ssh_key" {
   description = "The public SSH key to be used for the VM"
-  type        = string  
+  type        = string
 }
 
 variable "name" {

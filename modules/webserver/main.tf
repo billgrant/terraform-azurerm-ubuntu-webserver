@@ -15,7 +15,7 @@ terraform {
 
 locals {
   tags = {
-    name = var.name
+    name        = var.name
     environment = var.environment
   }
 }
@@ -51,7 +51,7 @@ resource "azurerm_network_interface" "webserver-nic" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.webserver-ip.id
   }
-    tags = local.tags
+  tags = local.tags
 }
 
 # Setup Azure Webserver
@@ -95,5 +95,5 @@ crontab mycron
 rm mycron
 CUSTOM_DATA
   )
-tags = local.tags
+  tags = local.tags
 }
