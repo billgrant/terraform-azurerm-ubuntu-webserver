@@ -13,15 +13,10 @@ variable "pub_ssh_key" {
   type        = string
 }
 
-variable "name" {
-  description = "The name of the webserver"
-  type        = string
-}
-
-variable "environment" {
-  description = "The environment for the webserver"
-  type        = string
-}
+variable "tags" {
+  description = "The tags to be assigned to the resources"
+  type        = map(string) 
+  }
 
 variable "vm_size" {
   description = "The size of the VM"

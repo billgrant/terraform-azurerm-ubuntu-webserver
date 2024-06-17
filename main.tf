@@ -9,7 +9,6 @@ module "webserver" {
   organization = var.organization
   workspace    = var.workspace
   pub_ssh_key  = var.pub_ssh_key
-  name         = var.name
-  environment  = var.environment
+  tags         = var.tags
   vm_size      = var.vm_size
 }
