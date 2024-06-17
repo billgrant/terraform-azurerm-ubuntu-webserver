@@ -15,8 +15,12 @@ variable "pub_ssh_key" {
 
 variable "tags" {
   description = "The tags to be assigned to the resources"
-  type        = map(string) 
+  type        = map(string)
+  default = {
+    name        = "no-code-demo"
+    environment = "default"
   }
+}
 
 variable "vm_size" {
   description = "The size of the VM"
