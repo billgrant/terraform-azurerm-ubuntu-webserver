@@ -23,6 +23,12 @@ resource "random_id" "webserver_id" {
   byte_length = 8
 }
 
+# Random ID for security group priority
+resource "random_integer" "webserver_sg_priority" {
+  min = 101
+  max = 4096  
+}
+
 # Create Public IP Address
 resource "azurerm_public_ip" "webserver-ip" {
   name                = "${var.tags["name"]}-ip-${random_id.webserver_id.hex}"
@@ -50,7 +56,7 @@ resource "azurerm_network_interface" "webserver-nic" {
 # Allow SSH traffic
 resource "azurerm_network_security_rule" "webserver-ssh" {
   name                        = "${var.tags["name"]}-nsr-${random_id.webserver_id.hex}"
-  priority                    = 100
+  priority                    = random_integer.webserver_sg_priority.result
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "Tcp"
