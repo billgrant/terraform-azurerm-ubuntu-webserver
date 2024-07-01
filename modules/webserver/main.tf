@@ -54,7 +54,6 @@ resource "azurerm_linux_virtual_machine" "webserver-vm" {
   resource_group_name = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_name
   size                = var.vm_size
   admin_username      = "adminuser"
-  encryption_at_host_enabled = false
   network_interface_ids = [
     azurerm_network_interface.webserver-nic.id
   ]
