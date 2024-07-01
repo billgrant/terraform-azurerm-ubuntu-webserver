@@ -49,7 +49,7 @@ resource "azurerm_network_interface" "webserver-nic" {
 
 # Allow SSH traffic
 resource "azurerm_network_security_rule" "webserver-ssh" {
-  name                        = "webserver-ssh"
+  name                        = "${var.tags["name"]}-nsr-${random_id.webserver_id.hex}"
   priority                    = 100
   direction                   = "Inbound"
   access                      = "Allow"
@@ -57,7 +57,7 @@ resource "azurerm_network_security_rule" "webserver-ssh" {
   source_port_range           = "*"
   destination_port_range      = "22"
   source_address_prefix       = "*"
-  destination_address_prefix  = "*"
+  destination_address_prefix  = "${azurerm_public_ip.webserver-ip.ip_address}/32"
   resource_group_name         = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_name
   network_security_group_name = data.tfe_outputs.rgvnet.nonsensitive_values.security_group_name
 }
