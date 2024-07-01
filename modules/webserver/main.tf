@@ -47,6 +47,21 @@ resource "azurerm_network_interface" "webserver-nic" {
   tags = var.tags
 }
 
+# Allow SSH traffic
+resource "azurerm_network_security_rule" "webserver-ssh" {
+  name                        = "webserver-ssh"
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "22"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = data.tfe_outputs.rgvnet.nonsensitive_values.resource_group_name
+  network_security_group_name = data.tfe_outputs.rgvnet.nonsensitive_values.security_group_name
+}
+
 # Setup Azure Webserver
 resource "azurerm_linux_virtual_machine" "webserver-vm" {
   name                = "${var.tags["name"]}-vm-${random_id.webserver_id.hex}"
