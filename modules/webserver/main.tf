@@ -98,7 +98,8 @@ resource "azurerm_linux_virtual_machine" "webserver-vm" {
   custom_data = base64encode(
     <<CUSTOM_DATA
 #!/bin/bash
-apt install nginx
+apt update
+apt install nginx -y
 service nginx stop
 rm /var/www/html/*
 echo "<h1>Azure Terraform Webserver </br> ${var.tags["name"]}-vm-${random_id.webserver_id.hex}</h1>" > /var/www/html/index.html
