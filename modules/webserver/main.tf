@@ -98,15 +98,11 @@ resource "azurerm_linux_virtual_machine" "webserver-vm" {
   custom_data = base64encode(
     <<CUSTOM_DATA
 #!/bin/bash
-echo "<h1>Azure Terraform Webserver </br> ${var.tags["name"]}-vm-${random_id.webserver_id.hex}<h1>" > index.html
-nohup busybox httpd -f -p 80 &
-#write out current crontab
-crontab -l > mycron
-#echo new cron into cron file
-echo "@reboot sleep 300 && nohup busybox httpd -f -p 80 -h / &" >> mycron
-#install new cron file
-crontab mycron
-rm mycron
+apt install nginx
+service nginx stop
+rm /var/www/html/*
+echo "<h1>Azure Terraform Webserver </br> ${var.tags["name"]}-vm-${random_id.webserver_id.hex}</h1>" > /var/www/html/index.html
+service nginx start
 CUSTOM_DATA
   )
   tags = var.tags
